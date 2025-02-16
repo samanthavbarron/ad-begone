@@ -126,7 +126,7 @@ def _remove_ads(
     file_name_transcription_cache: str,
     out_name: str | None = None,
     notif_name: str = "test/data/notif.mp3",
-):
+) -> str:
     transcription = cached_transcription(file_name)
     completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache)
     annotations = get_ordered_annotations(completion)
@@ -146,15 +146,18 @@ def _remove_ads(
         audio_no_ads += kept_window
 
     if out_name is None:
-        out_name = file_name.split(".")[0] + "_no_ads.mp3"
+        if "part_" not in file_name:
+            raise ValueError("Destructive")
+        out_name = file_name
 
     audio_no_ads.export(out_name, format="mp3")
+    return out_name
 
 
 def split_file(
     file_name: str,
     max_file_size_mb: float = 25.0,
-):
+) -> list[str]:
     max_file_size_mb = 25.0
     file_path = Path(file_name)
     audio = AudioSegment.from_mp3(file_name)
@@ -173,7 +176,7 @@ def split_file(
     return split_file_names
 
 
-def join_files(file_name: str):
+def join_files(file_name: str) -> str:
     path = Path(file_name)
     file_parts = []
     for fn in path.parent.glob("part_*_" + path.name):

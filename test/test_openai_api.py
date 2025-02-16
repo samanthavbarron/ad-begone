@@ -55,3 +55,24 @@ class TestAdTrimmer(TestCase):
     def test_join_file(self):
         file_name = "test/data/test_long.mp3"
         join_files(file_name)
+
+    def test_remove_ads_from_long_file(self):
+        file_name = "test/data/test_long.mp3"
+        split_names = split_file(file_name)
+        for split_name in split_names:
+            trimmer = AdTrimmer(split_name)
+            trimmer.remove_ads()
+        join_files(file_name)
+
+def remove_ads(
+    file_name: str,
+    out_name: str | None = None,
+    notif_name: str = "test/data/notif.mp3",
+):
+    if out_name is None:
+        out_name = file_name
+    split_names = split_file(file_name)
+    for split_name in split_names:
+        trimmer = AdTrimmer(split_name)
+        trimmer.remove_ads(notif_name=notif_name)
+    join_files(file_name)
