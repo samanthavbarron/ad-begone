@@ -15,6 +15,7 @@ dependencies = [
 
 [project.scripts]
 rmads = "ad_begone:remove_ads"
+adwatch = "ad_begone:watch_directory"
 
 [build-system]
 requires = ["hatchling"]
