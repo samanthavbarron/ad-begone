@@ -45,4 +45,5 @@ class AdTrimmer:
             file_name=self.file_name,
             out_name=out_name,
             notif_name=notif_name,
+            file_name_transcription_cache=self.transcription_cache_file,
         )

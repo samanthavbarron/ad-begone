@@ -52,13 +52,10 @@ def transcription_with_segment_indices(transcription: TranscriptionVerbose) -> s
 
 def cached_annotate_transcription(
     transcription: TranscriptionVerbose,
+    file_name: str,
     model: str = "gpt-4o-2024-08-06",
-    file_name: str | None = None,
 ) -> ParsedChatCompletion:
     transcription_inds = transcription_with_segment_indices(transcription)
-
-    if file_name is None:
-        file_name = "test/data/test_annotation_completion.json"
 
     if os.path.isfile(file_name):
         with open(file_name, "r") as f:
@@ -124,11 +121,12 @@ def find_ad_time_windows(
 
 def split_mp3(
     file_name: str,
+    file_name_transcription_cache: str,
     out_name: str | None = None,
     notif_name: str = "test/data/notif.mp3",
 ):
     transcription = cached_transcription(file_name)
-    completion = cached_annotate_transcription(transcription)
+    completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache)
     annotations = get_ordered_annotations(completion)
     windows = find_ad_time_windows(transcription, annotations)
 
