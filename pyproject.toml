@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-ad-begone = "ad_begone:main"
+rmads = "ad_begone:remove_ads"
 
 [build-system]
 requires = ["hatchling"]

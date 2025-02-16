@@ -1,2 +1,3 @@
-def main() -> None:
-    print("Hello from ad-begone!")
+from .remove_ads import remove_ads
+
+__all__ = ["remove_ads"]
