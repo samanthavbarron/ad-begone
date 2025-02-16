@@ -1,17 +1,17 @@
 
 from unittest import TestCase
 
-
 from ad_begone.ad_trimmer import AdTrimmer
+from ad_begone.remove_ads import remove_ads
 from ad_begone.utils import (
+    _remove_ads,
     cached_annotate_transcription,
     cached_transcription,
     find_ad_time_windows,
     get_ordered_annotations,
-    _remove_ads,
+    join_files,
+    split_file,
 )
-from ad_begone.utils import split_file
-from ad_begone.utils import join_files
 
 
 class TestOpenAIAPI(TestCase):
@@ -58,21 +58,4 @@ class TestAdTrimmer(TestCase):
 
     def test_remove_ads_from_long_file(self):
         file_name = "test/data/test_long.mp3"
-        split_names = split_file(file_name)
-        for split_name in split_names:
-            trimmer = AdTrimmer(split_name)
-            trimmer.remove_ads()
-        join_files(file_name)
-
-def remove_ads(
-    file_name: str,
-    out_name: str | None = None,
-    notif_name: str = "test/data/notif.mp3",
-):
-    if out_name is None:
-        out_name = file_name
-    split_names = split_file(file_name)
-    for split_name in split_names:
-        trimmer = AdTrimmer(split_name)
-        trimmer.remove_ads(notif_name=notif_name)
-    join_files(file_name)
+        remove_ads(file_name, "test/data/test_long_no_ads.mp3")

@@ -125,7 +125,7 @@ def _remove_ads(
     file_name: str,
     file_name_transcription_cache: str,
     out_name: str | None = None,
-    notif_name: str = "test/data/notif.mp3",
+    notif_name: str = "src/ad_begone/notif.mp3",
 ) -> str:
     transcription = cached_transcription(file_name)
     completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache)

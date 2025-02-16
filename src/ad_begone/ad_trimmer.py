@@ -39,7 +39,7 @@ class AdTrimmer:
     def remove_ads(
         self,
         out_name: str | None = None,
-        notif_name: str = "test/data/notif.mp3",
+        notif_name: str = "src/ad_begone/notif.mp3",
     ):
         _remove_ads(
             file_name=self.file_name,
