@@ -1,4 +1,5 @@
 from pathlib import Path
+from tqdm import tqdm
 
 from ad_begone.ad_trimmer import AdTrimmer
 from ad_begone.utils import join_files, split_file
@@ -20,12 +21,15 @@ def remove_ads(
         print("Already hit")
         return
     
+    print(f"Removing ads from {file_name}")
+    
     split_names = split_file(file_name)
-    for split_name in split_names:
+    for split_name in tqdm(split_names, desc="Splitting parts"):
         trimmer = AdTrimmer(split_name)
         trimmer.remove_ads(notif_name=notif_name)
+    print("Joining parts")
     join_files(file_name)
-
+    print("Done")
     path_file_hit.write_text("")
 
 if __name__ == "__main__":

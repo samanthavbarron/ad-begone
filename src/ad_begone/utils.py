@@ -30,6 +30,7 @@ def cached_transcription(
 
     audio_file = open(file_name, "rb")
 
+    print("Transcribing audio...")
     transcription: TranscriptionVerbose = CLIENT.audio.transcriptions.create(
         file=audio_file,
         model="whisper-1",
@@ -40,6 +41,7 @@ def cached_transcription(
     with open(file_transcription, "w") as f:
         f.write(transcription.model_dump_json())
 
+    print("Got transcription")
     return transcription
 
 
@@ -71,6 +73,7 @@ def cached_annotate_transcription(
         """
         user_prompt = f"Please annotate following transcription with the segments that are ads or content:\n{transcription_inds}"
 
+        print("Annotating transcription...")
         completion: ParsedChatCompletion = CLIENT.beta.chat.completions.parse(
             model=model,
             messages=[
@@ -81,6 +84,7 @@ def cached_annotate_transcription(
         )
         with open(file_name, "w") as f:
             f.write(completion.model_dump_json())
+        print("Got annotations")
 
     return completion
 

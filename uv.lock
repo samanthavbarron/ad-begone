@@ -10,6 +10,7 @@ dependencies = [
     { name = "numpy" },
     { name = "openai" },
     { name = "pydub" },
+    { name = "tqdm" },
 ]
 
 [package.metadata]
@@ -17,6 +18,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.2.3" },
     { name = "openai", specifier = ">=1.63.0" },
     { name = "pydub", specifier = ">=0.25.1" },
+    { name = "tqdm", specifier = ">=4.67.1" },
 ]
 
 [[package]]

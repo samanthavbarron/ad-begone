@@ -11,11 +11,11 @@ dependencies = [
     "numpy>=2.2.3",
     "openai>=1.63.0",
     "pydub>=0.25.1",
+    "tqdm>=4.67.1",
 ]
 
 [project.scripts]
-rmads = "ad_begone:remove_ads"
-adwatch = "ad_begone:watch_directory"
+adwatch = "ad_begone.watch_directory:main"
 
 [build-system]
 requires = ["hatchling"]

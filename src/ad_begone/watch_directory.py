@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 from time import sleep
 
@@ -11,17 +12,16 @@ def walk_directory(directory: str):
             overwrite=False,
     )
 
-if __name__ == "__main__":
-    import argparse
+def main():
     parser = argparse.ArgumentParser(description="Remove ads from a podcast episode.")
     parser.add_argument(
-        "directory",
+        "--directory",
         type=str,
         help="Path to the podcast episode file.",
         default=".",
     )
     parser.add_argument(
-        "sleep",
+        "--sleep",
         type=int,
         help="Sleep time between each file",
         default=600,
@@ -34,3 +34,6 @@ if __name__ == "__main__":
             sleep(args.sleep)
         except KeyboardInterrupt:
             break
+
+if __name__ == "__main__":
+    main()
