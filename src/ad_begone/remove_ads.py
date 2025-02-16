@@ -8,6 +8,7 @@ def remove_ads(
     file_name: str,
     out_name: str | None = None,
     notif_name: str = "src/ad_begone/notif.mp3",
+    overwrite: bool = False,
 ):
     if out_name is None:
         out_name = file_name
@@ -15,7 +16,7 @@ def remove_ads(
     path = Path(file_name)
     path_file_hit = path.parent / f".hit.{path.name}.txt"
 
-    if path_file_hit.exists():
+    if path_file_hit.exists() and not overwrite:
         print("Already hit")
         return
     
