@@ -5,17 +5,22 @@ from openai import OpenAI
 from openai.types.audio.transcription_verbose import TranscriptionVerbose
 from openai.types.chat.parsed_chat_completion import ParsedChatCompletion
 from openai.types.chat.parsed_function_tool_call import ParsedFunctionToolCall
+from pydub import AudioSegment
 
 from .models import SegmentAnnotation, Window
 
 CLIENT = None
 
 
-def cached_transcription(file_name: str) -> TranscriptionVerbose:
+def cached_transcription(
+    file_name: str,
+    file_transcription: str | None = None,
+) -> TranscriptionVerbose:
     if ".mp3" not in file_name:
         raise ValueError("Couldn't find valid file")
-    file_prefix = file_name.split(".mp3")[0]
-    file_transcription = file_prefix + ".json"
+
+    if file_transcription is None:
+        file_transcription = file_name.split(".mp3")[0] + ".json"
 
     if os.path.isfile(file_transcription):
         with open(file_transcription, "r") as f:
@@ -45,14 +50,18 @@ def transcription_with_segment_indices(transcription: TranscriptionVerbose) -> s
     return res
 
 
-def annotate_transcription(
+def cached_annotate_transcription(
     transcription: TranscriptionVerbose,
     model: str = "gpt-4o-2024-08-06",
+    file_name: str | None = None,
 ) -> ParsedChatCompletion:
     transcription_inds = transcription_with_segment_indices(transcription)
 
-    if os.path.isfile("test/data/test_annotation_completion.json"):
-        with open("test/data/test_annotation_completion.json", "r") as f:
+    if file_name is None:
+        file_name = "test/data/test_annotation_completion.json"
+
+    if os.path.isfile(file_name):
+        with open(file_name, "r") as f:
             _text = f.read()
         completion = ParsedChatCompletion.parse_raw(_text)
     else:
@@ -71,7 +80,7 @@ def annotate_transcription(
             ],
             tools=[ CLIENT.pydantic_function_tool(SegmentAnnotation), ],
         )
-        with open("test/data/test_annotation_completion.json", "w") as f:
+        with open(file_name, "w") as f:
             f.write(completion.model_dump_json())
 
     return completion
@@ -111,3 +120,32 @@ def find_ad_time_windows(
     windows.append(Window(start=current_time, end=transcription.segments[-1].end, segment_type=current_segment_type))
 
     return windows
+
+
+def split_mp3(
+    file_name: str,
+    out_name: str | None = None,
+    notif_name: str = "test/data/notif.mp3",
+):
+    transcription = cached_transcription(file_name)
+    completion = cached_annotate_transcription(transcription)
+    annotations = get_ordered_annotations(completion)
+    windows = find_ad_time_windows(transcription, annotations)
+
+    audio = AudioSegment.from_mp3(file_name)
+    notif = AudioSegment.from_mp3(notif_name)
+    kept_windows = []
+    for window in windows:
+        if window.segment_type == "content":
+            kept_windows.append(audio[window.start * 1000: window.end * 1000])
+        if window.segment_type == "ad":
+            kept_windows.append(notif)
+
+    audio_no_ads = AudioSegment.silent(duration=0)
+    for kept_window in kept_windows:
+        audio_no_ads += kept_window
+
+    if out_name is None:
+        out_name = file_name.split(".")[0] + "_no_ads.mp3"
+
+    audio_no_ads.export(out_name, format="mp3")
