@@ -1,6 +1,8 @@
 import os
+from pathlib import Path
 from typing import List
 
+import numpy as np
 from openai import OpenAI, pydantic_function_tool
 from openai.types.audio.transcription_verbose import TranscriptionVerbose
 from openai.types.chat.parsed_chat_completion import ParsedChatCompletion
@@ -119,7 +121,7 @@ def find_ad_time_windows(
     return windows
 
 
-def split_mp3(
+def _remove_ads(
     file_name: str,
     file_name_transcription_cache: str,
     out_name: str | None = None,
@@ -147,3 +149,39 @@ def split_mp3(
         out_name = file_name.split(".")[0] + "_no_ads.mp3"
 
     audio_no_ads.export(out_name, format="mp3")
+
+
+def split_file(
+    file_name: str,
+    max_file_size_mb: float = 25.0,
+):
+    max_file_size_mb = 25.0
+    file_path = Path(file_name)
+    audio = AudioSegment.from_mp3(file_name)
+    file_size = os.path.getsize(file_name) / 1024 / 1024
+    total_splits = int(np.ceil(file_size / max_file_size_mb))
+    def _split_i(i):
+        start = int(i * len(audio) / total_splits)
+        end = int((i + 1) * len(audio) / total_splits)
+        return audio[start:end]
+
+    split_file_names = []
+    for i in range(total_splits):
+        _fn = file_path.parent / f"part_{i}_{file_path.name}"
+        split_file_names.append(str(_fn))
+        _split_i(i).export(_fn, format="mp3")
+    return split_file_names
+
+
+def join_files(file_name: str):
+    path = Path(file_name)
+    file_parts = []
+    for fn in path.parent.glob("part_*_" + path.name):
+        file_parts.append(str(fn))
+    audio = AudioSegment.silent(duration=0)
+    for file_part in file_parts:
+        audio += AudioSegment.from_mp3(file_part)
+    joined_out = path.parent / ("joined_" + path.name)
+    joined_out_name = str(joined_out)
+    audio.export(joined_out_name, format="mp3")
+    return joined_out_name

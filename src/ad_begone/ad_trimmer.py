@@ -7,7 +7,7 @@ from .utils import (
     cached_transcription,
     find_ad_time_windows,
     get_ordered_annotations,
-    split_mp3,
+    _remove_ads,
 )
 
 
@@ -36,12 +36,12 @@ class AdTrimmer:
         annotations = get_ordered_annotations(self.segments_completion())
         return find_ad_time_windows(self.transcription(), annotations)
 
-    def split_mp3(
+    def remove_ads(
         self,
         out_name: str | None = None,
         notif_name: str = "test/data/notif.mp3",
     ):
-        split_mp3(
+        _remove_ads(
             file_name=self.file_name,
             out_name=out_name,
             notif_name=notif_name,

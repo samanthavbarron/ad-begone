@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "numpy>=2.2.3",
     "openai>=1.63.0",
     "pydub>=0.25.1",
 ]
