@@ -1,7 +1,7 @@
 import os
 from typing import List
 
-from openai import OpenAI
+from openai import OpenAI, pydantic_function_tool
 from openai.types.audio.transcription_verbose import TranscriptionVerbose
 from openai.types.chat.parsed_chat_completion import ParsedChatCompletion
 from openai.types.chat.parsed_function_tool_call import ParsedFunctionToolCall
@@ -9,7 +9,7 @@ from pydub import AudioSegment
 
 from .models import SegmentAnnotation, Window
 
-CLIENT = None
+CLIENT = OpenAI()
 
 
 def cached_transcription(
@@ -75,7 +75,7 @@ def cached_annotate_transcription(
                 { "role": "system", "content": system_prompt, },
                 { "role": "user", "content": user_prompt, },
             ],
-            tools=[ CLIENT.pydantic_function_tool(SegmentAnnotation), ],
+            tools=[ pydantic_function_tool(SegmentAnnotation), ],
         )
         with open(file_name, "w") as f:
             f.write(completion.model_dump_json())

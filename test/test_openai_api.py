@@ -38,5 +38,5 @@ class TestOpenAIAPI(TestCase):
 class TestAdTrimmer(TestCase):
     
     def test_transcription(self):
-        trimmer = AdTrimmer("test/data/test.mp3")
-        trimmer.split_mp3("test/data/test_no_ads.mp3")
+        trimmer = AdTrimmer("test/data/test_new.mp3")
+        trimmer.split_mp3("test/data/test_new_no_ads.mp3")
