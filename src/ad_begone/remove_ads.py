@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from ad_begone.ad_trimmer import AdTrimmer
 from ad_begone.utils import join_files, split_file
 
@@ -9,11 +11,21 @@ def remove_ads(
 ):
     if out_name is None:
         out_name = file_name
+    
+    path = Path(file_name)
+    path_file_hit = path.parent / f".hit.{path.name}.txt"
+
+    if path_file_hit.exists():
+        print("Already hit")
+        return
+    
     split_names = split_file(file_name)
     for split_name in split_names:
         trimmer = AdTrimmer(split_name)
         trimmer.remove_ads(notif_name=notif_name)
     join_files(file_name)
+
+    path_file_hit.write_text("")
 
 if __name__ == "__main__":
     import argparse
