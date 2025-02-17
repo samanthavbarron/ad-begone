@@ -192,4 +192,6 @@ def join_files(file_name: str) -> str:
     joined_out = path.parent / ("joined_" + path.name)
     joined_out_name = str(joined_out)
     audio.export(joined_out_name, format="mp3")
+    for file_part in file_parts:
+        os.remove(file_part)
     return joined_out_name
