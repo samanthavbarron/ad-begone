@@ -10,6 +10,8 @@ from .utils import (
     _remove_ads,
 )
 
+from .notif_path import NOTIF_PATH
+
 
 class AdTrimmer:
 
@@ -39,7 +41,7 @@ class AdTrimmer:
     def remove_ads(
         self,
         out_name: str | None = None,
-        notif_name: str = "src/ad_begone/notif.mp3",
+        notif_name: str = NOTIF_PATH,
     ):
         _remove_ads(
             file_name=self.file_name,

@@ -1,14 +1,15 @@
 from pathlib import Path
 from tqdm import tqdm
 
-from ad_begone.ad_trimmer import AdTrimmer
-from ad_begone.utils import join_files, split_file
+from .ad_trimmer import AdTrimmer
+from .utils import join_files, split_file
 
+from .notif_path import NOTIF_PATH
 
 def remove_ads(
     file_name: str,
     out_name: str | None = None,
-    notif_name: str = "src/ad_begone/notif.mp3",
+    notif_name: str = NOTIF_PATH,
     overwrite: bool = False,
 ):
     if out_name is None:

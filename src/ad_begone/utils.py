@@ -10,6 +10,7 @@ from openai.types.chat.parsed_function_tool_call import ParsedFunctionToolCall
 from pydub import AudioSegment
 
 from .models import SegmentAnnotation, Window
+from .notif_path import NOTIF_PATH
 
 CLIENT = OpenAI()
 
@@ -129,7 +130,7 @@ def _remove_ads(
     file_name: str,
     file_name_transcription_cache: str,
     out_name: str | None = None,
-    notif_name: str = "src/ad_begone/notif.mp3",
+    notif_name: str = NOTIF_PATH,
 ) -> str:
     transcription = cached_transcription(file_name)
     completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache)
