@@ -2,15 +2,28 @@ import argparse
 from pathlib import Path
 from time import sleep
 
+from tqdm import tqdm
+
 from .remove_ads import remove_ads
 
 
-def walk_directory(directory: str):
-    for path in Path(directory).rglob("*.mp3"):
+def walk_directory(
+    directory: str,
+    overwrite: bool = False,
+):
+    queue = []
+    for fn in Path(directory).rglob("*.mp3"):
+        path = Path(fn)
+        path_file_hit = path.parent / f".hit.{path.name}.txt"
+        if path_file_hit.exists() and not overwrite:
+            continue
+        queue.append(fn)
+    
+    for fn in tqdm(queue, desc="Podcasts to process"):
         remove_ads(
-            file_name=str(path),
-            overwrite=False,
-    )
+            file_name=str(fn),
+            overwrite=overwrite,
+        )
 
 def main():
     parser = argparse.ArgumentParser(description="Remove ads from a podcast episode.")
