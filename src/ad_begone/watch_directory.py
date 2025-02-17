@@ -44,6 +44,7 @@ def main():
     while True:
         try:
             walk_directory(args.directory)
+            print(f"Sleeping for {int(args.sleep / 60)} minutes...")
             sleep(args.sleep)
         except KeyboardInterrupt:
             break

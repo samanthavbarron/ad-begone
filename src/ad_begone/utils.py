@@ -181,7 +181,10 @@ def split_file(
     return split_file_names
 
 
-def join_files(file_name: str) -> str:
+def join_files(
+    file_name: str,
+    overwrite: bool = True,
+) -> str:
     path = Path(file_name)
     file_parts = []
     for fn in path.parent.glob("part_*_" + path.name):
@@ -189,7 +192,10 @@ def join_files(file_name: str) -> str:
     audio = AudioSegment.silent(duration=0)
     for file_part in file_parts:
         audio += AudioSegment.from_mp3(file_part)
-    joined_out = path.parent / ("joined_" + path.name)
+    if overwrite:
+        joined_out = path
+    else:
+        joined_out = path.parent / ("joined_" + path.name)
     joined_out_name = str(joined_out)
     audio.export(joined_out_name, format="mp3")
     for file_part in file_parts:
