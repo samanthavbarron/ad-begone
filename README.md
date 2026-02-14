@@ -40,6 +40,20 @@ uv sync
 
 ## Usage
 
+```
+usage: adwatch [-h] [--directory DIRECTORY] [--sleep SLEEP]
+
+Remove ads from a podcast episode.
+
+options:
+  -h, --help            show this help message and exit
+  --directory DIRECTORY
+                        Path to the podcast episode file.
+  --sleep SLEEP         Sleep time between each file
+```
+
+## Examples
+
 ### Watch a directory
 
 `adwatch` runs in a loop, scanning for new MP3 files and processing them:
