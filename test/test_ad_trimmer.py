@@ -50,7 +50,8 @@ class TestAdTrimmer(TestCase):
         self.assertEqual(result, mock_completion)
         mock_cached_annotate.assert_called_once_with(
             transcription=mock_transcription,
-            file_name="test.mp3.segments.json"
+            file_name="test.mp3.segments.json",
+            model=None,
         )
 
     @patch("ad_begone.ad_trimmer.find_ad_time_windows")
