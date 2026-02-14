@@ -54,6 +54,7 @@ jobs:
       - name: Run accuracy eval tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
         run: uv run --with pytest pytest test/test_accuracy_eval.py -v -s
 
       - name: Upload results
