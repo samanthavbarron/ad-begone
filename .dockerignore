@@ -1,0 +1,11 @@
+.env
+.env.*
+.git
+.github
+.claude
+.devcontainer
+.gitignore
+.python-version
+__pycache__
+*.egg-info
+test/
