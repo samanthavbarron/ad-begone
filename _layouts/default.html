@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #8b949e;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --btn-bg: #21262d;
+      --btn-hover: #30363d;
+      --content-bg: #161b22;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--content-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    nav .nav-brand {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    nav .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--fg);
+      background: var(--btn-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    nav .nav-links a:hover {
+      background: var(--btn-hover);
+      border-color: var(--muted);
+    }
+
+    nav .nav-links a svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--muted);
+    }
+
+    .content {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .content h1, .content h2, .content h3 {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.3em;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .content h1 { font-size: 2em; }
+    .content h2 { font-size: 1.5em; }
+    .content h3 { font-size: 1.25em; }
+
+    .content a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .content a:hover { text-decoration: underline; }
+
+    .content p { margin: 0.75em 0; }
+
+    .content code {
+      background: var(--content-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15em 0.35em;
+      font-size: 0.85em;
+    }
+
+    .content pre {
+      background: var(--content-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1em;
+      overflow-x: auto;
+      margin: 1em 0;
+    }
+
+    .content pre code {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .content ul, .content ol {
+      margin: 0.75em 0;
+      padding-left: 2em;
+    }
+
+    .content li { margin: 0.25em 0; }
+
+    .content img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .content p:has(img[alt="ad-begone logo"]) {
+      text-align: center;
+      margin: 1.5em 0;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-brand" href="{{ '/' | relative_url }}">ad-begone</a>
+    <div class="nav-links">
+      <a href="https://github.com/samanthavbarron/ad-begone">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <a href="https://github.com/samanthavbarron/ad-begone/releases">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.752 1.752 0 011 7.775zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 00.354 0l5.025-5.025a.25.25 0 000-.354l-6.25-6.25a.25.25 0 00-.177-.073H2.75a.25.25 0 00-.25.25zM6 5a1 1 0 110 2 1 1 0 010-2z"/></svg>
+        Releases
+      </a>
+      <a href="https://github.com/samanthavbarron/ad-begone/pkgs/container/ad-begone">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.633 0.5 a0.5 0.5 0 0 0-.866 0L6.11 3.5H2.5a0.5 0.5 0 0 0-.5.5v3.61l-1.654 2.848a0.5 0.5 0 0 0 0 .5l1.654 2.848V17.5a0.5 0.5 0 0 0 .5.5h3.61l2.848 1.654a0.5 0.5 0 0 0 .5 0L12.306 18H15.5a0.5 0.5 0 0 0 .5-.5v-3.61l1.654-2.848a0.5 0.5 0 0 0 0-.5L16 7.694V4a0.5 0.5 0 0 0-.5-.5h-3.61Z" transform="scale(0.8) translate(1, -0.5)" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 8h4M6 10.5h4M7 5.5h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+        GHCR
+      </a>
+      <a href="https://github.com/samanthavbarron/ad-begone/issues">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/><path d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/></svg>
+        Issues
+      </a>
+    </div>
+  </nav>
+  <div class="content">
+    {{ content }}
+  </div>
+</body>
+</html>
