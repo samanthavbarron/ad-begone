@@ -20,19 +20,40 @@ This Python package provides a CLI tool, `ad-begone`, that watches a directory f
 - [ffmpeg](https://ffmpeg.org/) (required by pydub for audio processing)
 - An [OpenAI API key](https://platform.openai.com/api-keys) set as `OPENAI_API_KEY` in your environment
 
-## Usage
+## Installation
 
 ```bash
 pip install .
 ```
 
-`ad-begone` runs in a loop, scanning for new MP3 files and processing them:
+## Usage
 
-```bash
-ad-begone --directory /path/to/podcasts
+```
+usage: ad-begone [-h] [--directory DIRECTORY] [--sleep SLEEP] [--model MODEL]
+
+Remove ads from a podcast episode.
+
+options:
+  -h, --help            show this help message and exit
+  --directory DIRECTORY
+                        Path to the podcast directory. (default: .)
+  --sleep SLEEP         Sleep time in seconds between processing runs. (default: 600)
+  --model MODEL         OpenAI model to use for ad classification. (default: None)
 ```
 
-To process a single file:
+## Examples
+
+### Watch a directory
+
+```bash
+# Watch a directory (checks every 10 minutes by default)
+ad-begone --directory /path/to/podcasts
+
+# Custom interval (in seconds)
+ad-begone --directory /path/to/podcasts --sleep 300
+```
+
+### Process a single file
 
 ```bash
 python -m ad_begone.remove_ads episode.mp3
