@@ -75,13 +75,21 @@ def _get_model() -> str:
         return _RESOLVED_MODEL
 
     models = _get_client().models.list()
+    # Filter for chat-capable GPT models, excluding instruct/realtime/audio
+    # variants that only support the /v1/completions endpoint.
+    non_chat_keywords = ("instruct", "realtime", "audio")
     gpt_models = sorted(
-        (m for m in models if m.id.startswith("gpt-")),
+        (
+            m
+            for m in models
+            if m.id.startswith("gpt-")
+            and not any(kw in m.id for kw in non_chat_keywords)
+        ),
         key=lambda m: m.created,
         reverse=True,
     )
     if not gpt_models:
-        raise RuntimeError("No GPT models available from the OpenAI API")
+        raise RuntimeError("No chat-capable GPT models available from the OpenAI API")
     _RESOLVED_MODEL = gpt_models[0].id
     print(f"No OPENAI_MODEL set, using {_RESOLVED_MODEL}")
     return _RESOLVED_MODEL
