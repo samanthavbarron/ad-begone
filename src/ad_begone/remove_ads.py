@@ -14,16 +14,16 @@ def remove_ads(
 ):
     if out_name is None:
         out_name = file_name
-    
+
     path = Path(file_name)
     path_file_hit = path.parent / f".hit.{path.name}.txt"
 
     if path_file_hit.exists() and not overwrite:
         print("Already hit")
         return
-    
+
     print(f"Removing ads from {file_name}")
-    
+
     split_names = split_file(file_name)
     for split_name in tqdm(split_names, desc="Splitting parts"):
         trimmer = AdTrimmer(split_name)

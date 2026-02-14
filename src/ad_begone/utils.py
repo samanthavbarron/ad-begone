@@ -12,7 +12,14 @@ from pydub import AudioSegment
 from .models import SegmentAnnotation, Window
 from .notif_path import NOTIF_PATH
 
-CLIENT = OpenAI()
+_CLIENT = None
+
+
+def _get_client() -> OpenAI:
+    global _CLIENT
+    if _CLIENT is None:
+        _CLIENT = OpenAI()
+    return _CLIENT
 
 
 def cached_transcription(
@@ -26,20 +33,19 @@ def cached_transcription(
         file_transcription = file_name.split(".mp3")[0] + ".json"
 
     if os.path.isfile(file_transcription):
-        with open(file_transcription, "r") as f:
+        with open(file_transcription, "r", encoding="utf-8") as f:
             return TranscriptionVerbose.parse_raw(f.read())
 
-    audio_file = open(file_name, "rb")
+    with open(file_name, "rb") as audio_file:
+        print("Transcribing audio...")
+        transcription: TranscriptionVerbose = _get_client().audio.transcriptions.create(
+            file=audio_file,
+            model="whisper-1",
+            response_format="verbose_json",
+            timestamp_granularities=["segment"]
+        )
 
-    print("Transcribing audio...")
-    transcription: TranscriptionVerbose = CLIENT.audio.transcriptions.create(
-        file=audio_file,
-        model="whisper-1",
-        response_format="verbose_json",
-        timestamp_granularities=["segment"]
-    )
-
-    with open(file_transcription, "w") as f:
+    with open(file_transcription, "w", encoding="utf-8") as f:
         f.write(transcription.model_dump_json())
 
     print("Got transcription")
@@ -63,7 +69,7 @@ def cached_annotate_transcription(
     transcription_inds = transcription_with_segment_indices(transcription)
 
     if os.path.isfile(file_name):
-        with open(file_name, "r") as f:
+        with open(file_name, "r", encoding="utf-8") as f:
             _text = f.read()
         completion = ParsedChatCompletion.parse_raw(_text)
     else:
@@ -75,7 +81,7 @@ def cached_annotate_transcription(
         user_prompt = f"Please annotate following transcription with the segments that are ads or content:\n{transcription_inds}"
 
         print("Annotating transcription...")
-        completion: ParsedChatCompletion = CLIENT.beta.chat.completions.parse(
+        completion: ParsedChatCompletion = _get_client().beta.chat.completions.parse(
             model=model,
             messages=[
                 { "role": "system", "content": system_prompt, },
@@ -83,7 +89,7 @@ def cached_annotate_transcription(
             ],
             tools=[ pydantic_function_tool(SegmentAnnotation), ],
         )
-        with open(file_name, "w") as f:
+        with open(file_name, "w", encoding="utf-8") as f:
             f.write(completion.model_dump_json())
         print("Got annotations")
 
@@ -121,7 +127,8 @@ def find_ad_time_windows(
             current_segment_type = ann.segment_type
         current_time = seg.end
 
-    windows.append(Window(start=current_time, end=transcription.segments[-1].end, segment_type=current_segment_type))
+    if current_segment_type is not None:
+        windows.append(Window(start=current_time, end=transcription.segments[-1].end, segment_type=current_segment_type))
 
     return windows
 
@@ -142,7 +149,7 @@ def _remove_ads(
     kept_windows = []
     for window in windows:
         if window.segment_type == "content":
-            kept_windows.append(audio[window.start * 1000: window.end * 1000])
+            kept_windows.append(audio[int(window.start * 1000): int(window.end * 1000)])
         if window.segment_type == "ad":
             kept_windows.append(notif)
 

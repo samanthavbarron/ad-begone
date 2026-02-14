@@ -18,7 +18,7 @@ def walk_directory(
         if path_file_hit.exists() and not overwrite:
             continue
         queue.append(fn)
-    
+
     for fn in tqdm(queue, desc="Podcasts to process"):
         remove_ads(
             file_name=str(fn),
