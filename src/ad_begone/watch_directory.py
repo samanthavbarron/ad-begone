@@ -6,6 +6,7 @@ import pydantic_argparse
 from tqdm import tqdm
 
 from .remove_ads import remove_ads
+from .utils import DEFAULT_MODEL
 
 
 class WatchArgs(pydantic.BaseModel):
@@ -18,11 +19,16 @@ class WatchArgs(pydantic.BaseModel):
         gt=0,
         description="Sleep time in seconds between processing runs.",
     )
+    model: str = pydantic.Field(
+        default=DEFAULT_MODEL,
+        description="OpenAI model to use for ad classification.",
+    )
 
 
 def walk_directory(
     directory: str,
     overwrite: bool = False,
+    model: str = DEFAULT_MODEL,
 ):
     queue = []
     for fn in Path(directory).rglob("*.mp3"):
@@ -36,6 +42,7 @@ def walk_directory(
         remove_ads(
             file_name=str(fn),
             overwrite=overwrite,
+            model=model,
         )
 
 def main():
@@ -47,7 +54,7 @@ def main():
 
     while True:
         try:
-            walk_directory(args.directory)
+            walk_directory(args.directory, model=args.model)
             print(f"Sleeping for {int(args.sleep / 60)} minutes...")
             sleep(args.sleep)
         except KeyboardInterrupt:

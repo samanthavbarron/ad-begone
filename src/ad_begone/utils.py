@@ -61,10 +61,13 @@ def transcription_with_segment_indices(transcription: TranscriptionVerbose) -> s
     return res
 
 
+DEFAULT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-2024-08-06")
+
+
 def cached_annotate_transcription(
     transcription: TranscriptionVerbose,
     file_name: str,
-    model: str = "gpt-4o-2024-08-06",
+    model: str = DEFAULT_MODEL,
 ) -> ParsedChatCompletion:
     transcription_inds = transcription_with_segment_indices(transcription)
 
@@ -138,9 +141,10 @@ def _remove_ads(
     file_name_transcription_cache: str,
     out_name: str | None = None,
     notif_name: str = NOTIF_PATH,
+    model: str = DEFAULT_MODEL,
 ) -> str:
     transcription = cached_transcription(file_name)
-    completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache)
+    completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache, model=model)
     annotations = get_ordered_annotations(completion)
     windows = find_ad_time_windows(transcription, annotations)
 
