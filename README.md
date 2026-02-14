@@ -6,7 +6,7 @@
 
 I hate ads. I especially hate ads when I'm listening to a podcast first thing in the morning.
 
-This Python package provides a CLI tool, `adwatch`, that watches a directory for MP3 files, detects ads in them, and removes them. It is intended for use with [Audiobookshelf](https://www.audiobookshelf.org/), which provides exactly this sort of directory.
+This Python package provides a CLI tool, `ad-begone`, that watches a directory for MP3 files, detects ads in them, and removes them. It is intended for use with [Audiobookshelf](https://www.audiobookshelf.org/), which provides exactly this sort of directory.
 
 ## How it works
 
@@ -42,17 +42,17 @@ uv sync
 
 ### Watch a directory
 
-`adwatch` runs in a loop, scanning for new MP3 files and processing them:
+`ad-begone` runs in a loop, scanning for new MP3 files and processing them:
 
 ```bash
 # Watch a directory (checks every 10 minutes by default)
-adwatch --directory /path/to/podcasts
+ad-begone --directory /path/to/podcasts
 
 # Custom interval (in seconds)
-adwatch --directory /path/to/podcasts --sleep 300
+ad-begone --directory /path/to/podcasts --sleep 300
 
 # Watch the current directory
-adwatch
+ad-begone
 ```
 
 Processed files are tracked with hidden marker files (`.hit.<filename>.txt`) so they won't be reprocessed on subsequent scans.
@@ -65,7 +65,7 @@ python -m ad_begone.remove_ads episode.mp3
 
 ## Docker
 
-A multi-stage Docker build is provided. The image uses `adwatch` as its entrypoint.
+A multi-stage Docker build is provided. The image uses `ad-begone` as its entrypoint.
 
 ```bash
 docker build -t ad-begone .

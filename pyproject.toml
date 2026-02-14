@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-adwatch = "ad_begone.watch_directory:main"
+ad-begone = "ad_begone.watch_directory:main"
 
 [build-system]
 requires = ["hatchling"]
