@@ -3,7 +3,7 @@ from openai.types.chat.parsed_chat_completion import ParsedChatCompletion
 
 from .models import Window
 from .utils import (
-    DEFAULT_MODEL,
+    OPENAI_MODEL,
     cached_annotate_transcription,
     cached_transcription,
     find_ad_time_windows,
@@ -16,7 +16,7 @@ from .notif_path import NOTIF_PATH
 
 class AdTrimmer:
 
-    def __init__(self, file_name: str, model: str = DEFAULT_MODEL):
+    def __init__(self, file_name: str, model: str | None = OPENAI_MODEL):
         self.file_name = file_name
         self.model = model
         if not file_name.endswith(".mp3"):

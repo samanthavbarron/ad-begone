@@ -1,12 +1,14 @@
 from pathlib import Path
 from time import sleep
 
+from typing import Optional
+
 import pydantic.v1 as pydantic
 import pydantic_argparse
 from tqdm import tqdm
 
 from .remove_ads import remove_ads
-from .utils import DEFAULT_MODEL
+from .utils import OPENAI_MODEL
 
 
 class WatchArgs(pydantic.BaseModel):
@@ -19,8 +21,8 @@ class WatchArgs(pydantic.BaseModel):
         gt=0,
         description="Sleep time in seconds between processing runs.",
     )
-    model: str = pydantic.Field(
-        default=DEFAULT_MODEL,
+    model: Optional[str] = pydantic.Field(
+        default=None,
         description="OpenAI model to use for ad classification.",
     )
 
@@ -28,7 +30,7 @@ class WatchArgs(pydantic.BaseModel):
 def walk_directory(
     directory: str,
     overwrite: bool = False,
-    model: str = DEFAULT_MODEL,
+    model: str | None = OPENAI_MODEL,
 ):
     queue = []
     for fn in Path(directory).rglob("*.mp3"):

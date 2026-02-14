@@ -51,7 +51,7 @@ class TestAdTrimmer(TestCase):
         mock_cached_annotate.assert_called_once_with(
             transcription=mock_transcription,
             file_name="test.mp3.segments.json",
-            model="gpt-4o-2024-08-06",
+            model=None,
         )
 
     @patch("ad_begone.ad_trimmer.find_ad_time_windows")

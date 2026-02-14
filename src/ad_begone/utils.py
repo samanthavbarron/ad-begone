@@ -61,13 +61,13 @@ def transcription_with_segment_indices(transcription: TranscriptionVerbose) -> s
     return res
 
 
-DEFAULT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-2024-08-06")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL")
 
 
 def cached_annotate_transcription(
     transcription: TranscriptionVerbose,
     file_name: str,
-    model: str = DEFAULT_MODEL,
+    model: str | None = OPENAI_MODEL,
 ) -> ParsedChatCompletion:
     transcription_inds = transcription_with_segment_indices(transcription)
 
@@ -83,15 +83,18 @@ def cached_annotate_transcription(
         """
         user_prompt = f"Please annotate following transcription with the segments that are ads or content:\n{transcription_inds}"
 
-        print("Annotating transcription...")
-        completion: ParsedChatCompletion = _get_client().beta.chat.completions.parse(
-            model=model,
+        kwargs = dict(
             messages=[
                 { "role": "system", "content": system_prompt, },
                 { "role": "user", "content": user_prompt, },
             ],
             tools=[ pydantic_function_tool(SegmentAnnotation), ],
         )
+        if model is not None:
+            kwargs["model"] = model
+
+        print("Annotating transcription...")
+        completion: ParsedChatCompletion = _get_client().beta.chat.completions.parse(**kwargs)
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(completion.model_dump_json())
         print("Got annotations")
@@ -141,7 +144,7 @@ def _remove_ads(
     file_name_transcription_cache: str,
     out_name: str | None = None,
     notif_name: str = NOTIF_PATH,
-    model: str = DEFAULT_MODEL,
+    model: str | None = OPENAI_MODEL,
 ) -> str:
     transcription = cached_transcription(file_name)
     completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache, model=model)
