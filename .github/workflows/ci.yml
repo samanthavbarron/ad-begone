@@ -33,8 +33,20 @@ jobs:
           OPENAI_API_KEY: dummy
         run: uv run --with pytest pytest test/ -v
 
-  build-image:
+  docker-smoke-test:
     needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t ad-begone:test .
+
+      - name: Verify module is importable
+        run: docker run --rm ad-begone:test python -c "from ad_begone.watch_directory import main; print('ok')"
+
+  build-image:
+    needs: [test, docker-smoke-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
