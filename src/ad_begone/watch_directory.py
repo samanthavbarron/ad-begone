@@ -1,15 +1,35 @@
-import argparse
 from pathlib import Path
 from time import sleep
 
+from typing import Optional
+
+import pydantic.v1 as pydantic
+import pydantic_argparse
 from tqdm import tqdm
 
 from .remove_ads import remove_ads
 
 
+class WatchArgs(pydantic.BaseModel):
+    directory: str = pydantic.Field(
+        default=".",
+        description="Path to the podcast directory.",
+    )
+    sleep: int = pydantic.Field(
+        default=600,
+        gt=0,
+        description="Sleep time in seconds between processing runs.",
+    )
+    model: Optional[str] = pydantic.Field(
+        default=None,
+        description="OpenAI model to use for ad classification.",
+    )
+
+
 def walk_directory(
     directory: str,
     overwrite: bool = False,
+    model: str | None = None,
 ):
     queue = []
     for fn in Path(directory).rglob("*.mp3"):
@@ -23,27 +43,19 @@ def walk_directory(
         remove_ads(
             file_name=str(fn),
             overwrite=overwrite,
+            model=model,
         )
 
 def main():
-    parser = argparse.ArgumentParser(description="Remove ads from a podcast episode.")
-    parser.add_argument(
-        "--directory",
-        type=str,
-        help="Path to the podcast episode file.",
-        default=".",
+    parser = pydantic_argparse.ArgumentParser(
+        model=WatchArgs,
+        description="Remove ads from a podcast episode.",
     )
-    parser.add_argument(
-        "--sleep",
-        type=int,
-        help="Sleep time between each file",
-        default=600,
-    )
-    args = parser.parse_args()
+    args = parser.parse_typed_args()
 
     while True:
         try:
-            walk_directory(args.directory)
+            walk_directory(args.directory, model=args.model)
             print(f"Sleeping for {int(args.sleep / 60)} minutes...")
             sleep(args.sleep)
         except KeyboardInterrupt:

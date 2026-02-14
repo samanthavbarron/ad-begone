@@ -61,6 +61,40 @@ def transcription_with_segment_indices(transcription: TranscriptionVerbose) -> s
     return res
 
 
+_RESOLVED_MODEL = None
+
+
+def _get_model() -> str:
+    global _RESOLVED_MODEL
+    if _RESOLVED_MODEL is not None:
+        return _RESOLVED_MODEL
+
+    env_model = os.environ.get("OPENAI_MODEL")
+    if env_model:
+        _RESOLVED_MODEL = env_model
+        return _RESOLVED_MODEL
+
+    models = _get_client().models.list()
+    # Filter for chat-capable GPT models, excluding instruct/realtime/audio
+    # variants that only support the /v1/completions endpoint.
+    non_chat_keywords = ("instruct", "realtime", "audio")
+    gpt_models = sorted(
+        (
+            m
+            for m in models
+            if m.id.startswith("gpt-")
+            and not any(kw in m.id for kw in non_chat_keywords)
+        ),
+        key=lambda m: m.created,
+        reverse=True,
+    )
+    if not gpt_models:
+        raise RuntimeError("No chat-capable GPT models available from the OpenAI API")
+    _RESOLVED_MODEL = gpt_models[0].id
+    print(f"No OPENAI_MODEL set, using {_RESOLVED_MODEL}")
+    return _RESOLVED_MODEL
+
+
 def cached_annotate_transcription(
     transcription: TranscriptionVerbose,
     file_name: str,
@@ -73,6 +107,8 @@ def cached_annotate_transcription(
             _text = f.read()
         completion = ParsedChatCompletion.parse_raw(_text)
     else:
+        if model is None:
+            model = _get_model()
         system_prompt = """You are a helpful assistant.
         You help users identify segments in a transcription that are ads or content.
         You will be given a transcription and asked to annotate the segments as either ads or content.
@@ -138,9 +174,10 @@ def _remove_ads(
     file_name_transcription_cache: str,
     out_name: str | None = None,
     notif_name: str = NOTIF_PATH,
+    model: str | None = None,
 ) -> str:
     transcription = cached_transcription(file_name)
-    completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache)
+    completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache, model=model)
     annotations = get_ordered_annotations(completion)
     windows = find_ad_time_windows(transcription, annotations)
 

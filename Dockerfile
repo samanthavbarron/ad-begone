@@ -19,4 +19,4 @@ RUN apt-get update && \
 COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
-ENTRYPOINT ["adwatch"]
+ENTRYPOINT ["ad-begone"]

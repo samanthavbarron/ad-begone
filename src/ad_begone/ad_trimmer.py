@@ -15,8 +15,9 @@ from .notif_path import NOTIF_PATH
 
 class AdTrimmer:
 
-    def __init__(self, file_name: str):
+    def __init__(self, file_name: str, model: str | None = None):
         self.file_name = file_name
+        self.model = model
         if not file_name.endswith(".mp3"):
             raise ValueError("File name must end with .mp3")
         self.transcription_cache_file = file_name + ".transcription.json"
@@ -32,6 +33,7 @@ class AdTrimmer:
         return cached_annotate_transcription(
             transcription=self.transcription(),
             file_name=self.segments_cache_file,
+            model=self.model,
         )
 
     def get_time_windows(self) -> list[Window]:
@@ -48,4 +50,5 @@ class AdTrimmer:
             out_name=out_name,
             notif_name=notif_name,
             file_name_transcription_cache=self.transcription_cache_file,
+            model=self.model,
         )

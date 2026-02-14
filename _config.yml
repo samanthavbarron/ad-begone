@@ -1,0 +1,22 @@
+title: ad-begone
+description: Remove ads from MP3 files
+url: https://samanthavbarron.github.io
+baseurl: /ad-begone
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+exclude:
+  - Dockerfile
+  - compose.yml
+  - pyproject.toml
+  - uv.lock
+  - src
+  - test
+  - scripts
+  - .venv
+  - README.md
+  - LICENSE
