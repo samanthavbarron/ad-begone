@@ -2,7 +2,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from .ad_trimmer import AdTrimmer
-from .utils import OPENAI_MODEL, join_files, split_file
+from .utils import join_files, split_file
 
 from .notif_path import NOTIF_PATH
 
@@ -11,7 +11,7 @@ def remove_ads(
     out_name: str | None = None,
     notif_name: str = NOTIF_PATH,
     overwrite: bool = False,
-    model: str | None = OPENAI_MODEL,
+    model: str | None = None,
 ):
     if out_name is None:
         out_name = file_name
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             description="Path to save the podcast episode file without ads.",
         )
         model: Optional[str] = pydantic.Field(
-            default=OPENAI_MODEL,
+            default=None,
             description="OpenAI model to use for ad classification.",
         )
 

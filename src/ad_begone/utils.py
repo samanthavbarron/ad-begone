@@ -61,13 +61,36 @@ def transcription_with_segment_indices(transcription: TranscriptionVerbose) -> s
     return res
 
 
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL")
+_RESOLVED_MODEL = None
+
+
+def _get_model() -> str:
+    global _RESOLVED_MODEL
+    if _RESOLVED_MODEL is not None:
+        return _RESOLVED_MODEL
+
+    env_model = os.environ.get("OPENAI_MODEL")
+    if env_model:
+        _RESOLVED_MODEL = env_model
+        return _RESOLVED_MODEL
+
+    models = _get_client().models.list()
+    gpt_models = sorted(
+        (m for m in models if m.id.startswith("gpt-")),
+        key=lambda m: m.created,
+        reverse=True,
+    )
+    if not gpt_models:
+        raise RuntimeError("No GPT models available from the OpenAI API")
+    _RESOLVED_MODEL = gpt_models[0].id
+    print(f"No OPENAI_MODEL set, using {_RESOLVED_MODEL}")
+    return _RESOLVED_MODEL
 
 
 def cached_annotate_transcription(
     transcription: TranscriptionVerbose,
     file_name: str,
-    model: str | None = OPENAI_MODEL,
+    model: str | None = None,
 ) -> ParsedChatCompletion:
     transcription_inds = transcription_with_segment_indices(transcription)
 
@@ -76,6 +99,8 @@ def cached_annotate_transcription(
             _text = f.read()
         completion = ParsedChatCompletion.parse_raw(_text)
     else:
+        if model is None:
+            model = _get_model()
         system_prompt = """You are a helpful assistant.
         You help users identify segments in a transcription that are ads or content.
         You will be given a transcription and asked to annotate the segments as either ads or content.
@@ -83,18 +108,15 @@ def cached_annotate_transcription(
         """
         user_prompt = f"Please annotate following transcription with the segments that are ads or content:\n{transcription_inds}"
 
-        kwargs = dict(
+        print("Annotating transcription...")
+        completion: ParsedChatCompletion = _get_client().beta.chat.completions.parse(
+            model=model,
             messages=[
                 { "role": "system", "content": system_prompt, },
                 { "role": "user", "content": user_prompt, },
             ],
             tools=[ pydantic_function_tool(SegmentAnnotation), ],
         )
-        if model is not None:
-            kwargs["model"] = model
-
-        print("Annotating transcription...")
-        completion: ParsedChatCompletion = _get_client().beta.chat.completions.parse(**kwargs)
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(completion.model_dump_json())
         print("Got annotations")
@@ -144,7 +166,7 @@ def _remove_ads(
     file_name_transcription_cache: str,
     out_name: str | None = None,
     notif_name: str = NOTIF_PATH,
-    model: str | None = OPENAI_MODEL,
+    model: str | None = None,
 ) -> str:
     transcription = cached_transcription(file_name)
     completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache, model=model)

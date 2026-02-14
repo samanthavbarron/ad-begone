@@ -8,7 +8,6 @@ import pydantic_argparse
 from tqdm import tqdm
 
 from .remove_ads import remove_ads
-from .utils import OPENAI_MODEL
 
 
 class WatchArgs(pydantic.BaseModel):
@@ -30,7 +29,7 @@ class WatchArgs(pydantic.BaseModel):
 def walk_directory(
     directory: str,
     overwrite: bool = False,
-    model: str | None = OPENAI_MODEL,
+    model: str | None = None,
 ):
     queue = []
     for fn in Path(directory).rglob("*.mp3"):
