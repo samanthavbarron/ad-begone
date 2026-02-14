@@ -6,7 +6,7 @@
 
 Nobody likes ads. Instead of skipping them, let's remove them altogether.
 
-This Python package provides a CLI tool, `adwatch`, that watches a directory for MP3 files, detects ads in them, and removes them. It is intended for use with [Audiobookshelf](https://www.audiobookshelf.org/), which provides exactly this sort of directory.
+This Python package provides a CLI tool, `ad-begone`, that watches a directory for MP3 files, detects ads in them, and removes them. It is intended for use with [Audiobookshelf](https://www.audiobookshelf.org/), which provides exactly this sort of directory.
 
 ## How it works
 
@@ -26,10 +26,10 @@ This Python package provides a CLI tool, `adwatch`, that watches a directory for
 pip install .
 ```
 
-`adwatch` runs in a loop, scanning for new MP3 files and processing them:
+`ad-begone` runs in a loop, scanning for new MP3 files and processing them:
 
 ```bash
-adwatch --directory /path/to/podcasts
+ad-begone --directory /path/to/podcasts
 ```
 
 To process a single file:
