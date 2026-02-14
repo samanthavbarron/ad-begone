@@ -60,7 +60,10 @@ Processed files are tracked with hidden marker files (`.hit.<filename>.txt`) so 
 ### Process a single file
 
 ```bash
-python -m ad_begone.remove_ads episode.mp3
+python -m ad_begone.remove_ads --file-name episode.mp3
+
+# Optionally specify an output path
+python -m ad_begone.remove_ads --file-name episode.mp3 --out-name cleaned.mp3
 ```
 
 ## Docker
