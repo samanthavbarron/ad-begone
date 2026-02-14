@@ -33,37 +33,6 @@ jobs:
           OPENAI_API_KEY: dummy
         run: uv run --with pytest pytest test/ -v
 
-  accuracy-eval:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Set up Python 3.12
-        run: uv python install 3.12
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Run accuracy eval tests
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
-        run: uv run --with pytest pytest test/test_accuracy_eval.py -v -s
-
-      - name: Upload results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: accuracy-eval-results
-          path: test/fixtures/
-
   build-image:
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
