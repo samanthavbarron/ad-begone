@@ -1,3 +1,5 @@
+import logging
+
 from openai.types.audio.transcription_verbose import TranscriptionVerbose
 from openai.types.chat.parsed_chat_completion import ParsedChatCompletion
 
@@ -12,6 +14,8 @@ from .utils import (
 
 from .notif_path import NOTIF_PATH
 
+logger = logging.getLogger(__name__)
+
 
 class AdTrimmer:
 
@@ -19,6 +23,7 @@ class AdTrimmer:
         self.file_name = file_name
         self.model = model
         if not file_name.endswith(".mp3"):
+            logger.error("Invalid file extension for AdTrimmer: %s", file_name)
             raise ValueError("File name must end with .mp3")
         self.transcription_cache_file = file_name + ".transcription.json"
         self.segments_cache_file = file_name + ".segments.json"
