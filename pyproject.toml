@@ -12,6 +12,7 @@ dependencies = [
     "openai>=1.63.0",
     "pydantic-argparse>=0.10.0",
     "pydub>=0.25.1",
+    "audioop-lts>=0.2.2; python_version>='3.13'",
     "tqdm>=4.67.1",
 ]
 
