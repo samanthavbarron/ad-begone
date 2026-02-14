@@ -92,8 +92,6 @@ def cached_annotate_transcription(
     file_name: str,
     model: str | None = None,
 ) -> ParsedChatCompletion:
-    if model is None:
-        model = _get_model()
     transcription_inds = transcription_with_segment_indices(transcription)
 
     if os.path.isfile(file_name):
@@ -101,6 +99,8 @@ def cached_annotate_transcription(
             _text = f.read()
         completion = ParsedChatCompletion.parse_raw(_text)
     else:
+        if model is None:
+            model = _get_model()
         system_prompt = """You are a helpful assistant.
         You help users identify segments in a transcription that are ads or content.
         You will be given a transcription and asked to annotate the segments as either ads or content.
@@ -168,8 +168,6 @@ def _remove_ads(
     notif_name: str = NOTIF_PATH,
     model: str | None = None,
 ) -> str:
-    if model is None:
-        model = _get_model()
     transcription = cached_transcription(file_name)
     completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache, model=model)
     annotations = get_ordered_annotations(completion)
