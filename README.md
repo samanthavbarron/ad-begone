@@ -11,14 +11,8 @@ This Python package provides a CLI tool, `adwatch`, that watches a directory for
 ## How it works
 
 1. **Transcribe** -- Uses OpenAI's Whisper API to transcribe podcast audio into timestamped segments
-2. **Annotate** -- Sends segments to the GPT-4o Chat Completions API with function calling to classify each segment as content or ad
-3. **Trim** -- Removes ad segments from the audio and inserts a short [bell-like notification sound](https://github.com/samanthavbarron/ad-begone/blob/main/src/ad_begone/notif.mp3) where ads were removed
-
-Files larger than 25 MB are automatically split into parts to stay within Whisper's upload limit, processed individually, then recombined.
-
-## Cost
-
-Most of the billing usage from OpenAI's API is due to the Whisper transcription service. Removing ads on a ~20 minute podcast costs about $0.30 (~$1/hour). Since the bottleneck is transcription and the [Whisper model is open source](https://github.com/openai/whisper), the costs could likely be improved by running Whisper locally.
+2. **Annotate** -- Sends segments to the GPT-4o Chat Completions API to classify each segment as content or ad
+3. **Trim** -- Removes ad segments and inserts a short [notification sound](https://github.com/samanthavbarron/ad-begone/blob/main/src/ad_begone/notif.mp3) where ads were removed
 
 ## Prerequisites
 
@@ -26,52 +20,25 @@ Most of the billing usage from OpenAI's API is due to the Whisper transcription 
 - [ffmpeg](https://ffmpeg.org/) (required by pydub for audio processing)
 - An [OpenAI API key](https://platform.openai.com/api-keys) set as `OPENAI_API_KEY` in your environment
 
-## Installation
+## Usage
 
 ```bash
 pip install .
 ```
 
-Or with [uv](https://docs.astral.sh/uv/):
-
-```bash
-uv sync
-```
-
-## Usage
-
-### Watch a directory
-
 `adwatch` runs in a loop, scanning for new MP3 files and processing them:
 
 ```bash
-# Watch a directory (checks every 10 minutes by default)
 adwatch --directory /path/to/podcasts
-
-# Custom interval (in seconds)
-adwatch --directory /path/to/podcasts --sleep 300
-
-# Watch the current directory
-adwatch
 ```
 
-Processed files are tracked with hidden marker files (`.hit.<filename>.txt`) so they won't be reprocessed on subsequent scans.
-
-### Process a single file
+To process a single file:
 
 ```bash
 python -m ad_begone.remove_ads episode.mp3
 ```
 
 ## Docker
-
-A multi-stage Docker build is provided. The image uses `adwatch` as its entrypoint.
-
-```bash
-docker build -t ad-begone .
-```
-
-Or use Docker Compose (`compose.yml` included):
 
 ```bash
 # Set your API key in .env or export it
@@ -82,22 +49,6 @@ docker compose up
 ```
 
 The compose configuration mounts `./podcasts` to `/data` inside the container and runs with `restart: unless-stopped`.
-
-## Development
-
-```bash
-# Install dev dependencies
-uv sync
-
-# Run tests
-uv run pytest test/ -v
-
-# Type checking
-uv run mypy src/
-
-# Run tests with coverage
-uv run pytest --cov=ad_begone test/
-```
 
 ## License
 
