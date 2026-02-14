@@ -64,7 +64,7 @@ def transcription_with_segment_indices(transcription: TranscriptionVerbose) -> s
 def cached_annotate_transcription(
     transcription: TranscriptionVerbose,
     file_name: str,
-    model: str = "gpt-4o-2024-08-06",
+    model: str = os.environ.get("OPENAI_MODEL", "gpt-4o-2024-08-06"),
 ) -> ParsedChatCompletion:
     transcription_inds = transcription_with_segment_indices(transcription)
 
