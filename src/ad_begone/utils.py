@@ -30,6 +30,7 @@ def cached_transcription(
     file_transcription: str | None = None,
 ) -> TranscriptionVerbose:
     if ".mp3" not in file_name:
+        logger.error("Invalid file type for transcription: %s", file_name)
         raise ValueError("Couldn't find valid file")
 
     if file_transcription is None:
@@ -92,6 +93,7 @@ def _get_model() -> str:
         reverse=True,
     )
     if not gpt_models:
+        logger.error("No chat-capable GPT models available from the OpenAI API")
         raise RuntimeError("No chat-capable GPT models available from the OpenAI API")
     _RESOLVED_MODEL = gpt_models[0].id
     logger.warning("No OPENAI_MODEL set, using %s", _RESOLVED_MODEL)
@@ -199,6 +201,7 @@ def _remove_ads(
 
     if out_name is None:
         if "part_" not in file_name:
+            logger.error("Refusing to overwrite non-part file without explicit out_name: %s", file_name)
             raise ValueError("Destructive")
         out_name = file_name
 
