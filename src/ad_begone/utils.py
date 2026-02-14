@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from typing import List
@@ -11,6 +12,8 @@ from pydub import AudioSegment
 
 from .models import SegmentAnnotation, Window
 from .notif_path import NOTIF_PATH
+
+logger = logging.getLogger(__name__)
 
 _CLIENT = None
 
@@ -37,7 +40,7 @@ def cached_transcription(
             return TranscriptionVerbose.parse_raw(f.read())
 
     with open(file_name, "rb") as audio_file:
-        print("Transcribing audio...")
+        logger.info("Transcribing audio for %s", file_name)
         transcription: TranscriptionVerbose = _get_client().audio.transcriptions.create(
             file=audio_file,
             model="whisper-1",
@@ -48,7 +51,7 @@ def cached_transcription(
     with open(file_transcription, "w", encoding="utf-8") as f:
         f.write(transcription.model_dump_json())
 
-    print("Got transcription")
+    logger.info("Got transcription for %s", file_name)
     return transcription
 
 
@@ -91,7 +94,7 @@ def _get_model() -> str:
     if not gpt_models:
         raise RuntimeError("No chat-capable GPT models available from the OpenAI API")
     _RESOLVED_MODEL = gpt_models[0].id
-    print(f"No OPENAI_MODEL set, using {_RESOLVED_MODEL}")
+    logger.warning("No OPENAI_MODEL set, using %s", _RESOLVED_MODEL)
     return _RESOLVED_MODEL
 
 
@@ -116,7 +119,7 @@ def cached_annotate_transcription(
         """
         user_prompt = f"Please annotate following transcription with the segments that are ads or content:\n{transcription_inds}"
 
-        print("Annotating transcription...")
+        logger.info("Annotating transcription for %s", file_name)
         completion: ParsedChatCompletion = _get_client().beta.chat.completions.parse(
             model=model,
             messages=[
@@ -127,7 +130,7 @@ def cached_annotate_transcription(
         )
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(completion.model_dump_json())
-        print("Got annotations")
+        logger.info("Got annotations for %s", file_name)
 
     return completion
 

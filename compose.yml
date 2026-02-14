@@ -3,6 +3,7 @@ services:
     build: .
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LOG_FORMAT=json
     volumes:
       - ./podcasts:/data
     command: ["--directory", "/data"]

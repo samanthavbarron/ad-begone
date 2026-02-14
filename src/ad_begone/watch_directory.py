@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from time import sleep
 
@@ -7,7 +8,10 @@ import pydantic.v1 as pydantic
 import pydantic_argparse
 from tqdm import tqdm
 
+from .logging import setup_logging
 from .remove_ads import remove_ads
+
+logger = logging.getLogger(__name__)
 
 
 class WatchArgs(pydantic.BaseModel):
@@ -47,6 +51,8 @@ def walk_directory(
         )
 
 def main():
+    setup_logging()
+
     parser = pydantic_argparse.ArgumentParser(
         model=WatchArgs,
         description="Remove ads from a podcast episode.",
@@ -56,7 +62,7 @@ def main():
     while True:
         try:
             walk_directory(args.directory, model=args.model)
-            print(f"Sleeping for {int(args.sleep / 60)} minutes...")
+            logger.info("Sleeping for %d minutes", args.sleep // 60)
             sleep(args.sleep)
         except KeyboardInterrupt:
             break
