@@ -18,5 +18,6 @@ RUN apt-get update && \
 
 COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
 
 ENTRYPOINT ["ad-begone"]
