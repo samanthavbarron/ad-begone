@@ -1,10 +1,23 @@
-import argparse
 from pathlib import Path
 from time import sleep
 
+import pydantic.v1 as pydantic
+import pydantic_argparse
 from tqdm import tqdm
 
 from .remove_ads import remove_ads
+
+
+class WatchArgs(pydantic.BaseModel):
+    directory: str = pydantic.Field(
+        default=".",
+        description="Path to the podcast directory.",
+    )
+    sleep: int = pydantic.Field(
+        default=600,
+        gt=0,
+        description="Sleep time in seconds between processing runs.",
+    )
 
 
 def walk_directory(
@@ -26,20 +39,11 @@ def walk_directory(
         )
 
 def main():
-    parser = argparse.ArgumentParser(description="Remove ads from a podcast episode.")
-    parser.add_argument(
-        "--directory",
-        type=str,
-        help="Path to the podcast episode file.",
-        default=".",
+    parser = pydantic_argparse.ArgumentParser(
+        model=WatchArgs,
+        description="Remove ads from a podcast episode.",
     )
-    parser.add_argument(
-        "--sleep",
-        type=int,
-        help="Sleep time between each file",
-        default=600,
-    )
-    args = parser.parse_args()
+    args = parser.parse_typed_args()
 
     while True:
         try:

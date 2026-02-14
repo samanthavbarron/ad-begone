@@ -34,19 +34,24 @@ def remove_ads(
     path_file_hit.write_text("")
 
 if __name__ == "__main__":
-    import argparse
+    from typing import Optional
 
-    parser = argparse.ArgumentParser(description="Remove ads from a podcast episode.")
+    import pydantic.v1 as pydantic
+    import pydantic_argparse
 
-    parser.add_argument("file_name", type=str, help="Path to the podcast episode file.")
+    class RemoveAdsArgs(pydantic.BaseModel):
+        file_name: str = pydantic.Field(
+            description="Path to the podcast episode file.",
+        )
+        out_name: Optional[str] = pydantic.Field(
+            default=None,
+            description="Path to save the podcast episode file without ads.",
+        )
 
-    parser.add_argument(
-        "--out_name",
-        type=str,
-        default=None,
-        help="Path to save the podcast episode file without ads.",
+    parser = pydantic_argparse.ArgumentParser(
+        model=RemoveAdsArgs,
+        description="Remove ads from a podcast episode.",
     )
+    args = parser.parse_typed_args()
 
-    args = parser.parse_args()
-
-    remove_ads(args.file_name, args.out_name, args.notif_name)
+    remove_ads(args.file_name, args.out_name)
