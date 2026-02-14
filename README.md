@@ -40,8 +40,6 @@ uv sync
 
 ## Usage
 
-### Watch a directory
-
 `adwatch` runs in a loop, scanning for new MP3 files and processing them:
 
 ```bash
@@ -56,15 +54,6 @@ adwatch
 ```
 
 Processed files are tracked with hidden marker files (`.hit.<filename>.txt`) so they won't be reprocessed on subsequent scans.
-
-### Process a single file
-
-```bash
-python -m ad_begone.remove_ads --file-name episode.mp3
-
-# Optionally specify an output path
-python -m ad_begone.remove_ads --file-name episode.mp3 --out-name cleaned.mp3
-```
 
 ## Docker
 
