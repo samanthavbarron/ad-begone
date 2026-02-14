@@ -282,6 +282,34 @@ class TestJoinFiles(TestCase):
 
     @patch("ad_begone.utils.AudioSegment")
     @patch("ad_begone.utils.os.remove")
+    def test_join_files_orders_by_part_index(self, mock_remove, mock_audio_segment):
+        mock_audio = Mock()
+        mock_audio.__add__ = Mock(return_value=mock_audio)
+        mock_audio_segment.silent.return_value = mock_audio
+        mock_audio_segment.from_mp3.return_value = mock_audio
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir_path = Path(tmpdir)
+            original_file = tmpdir_path / "test.mp3"
+            original_file.touch()
+
+            # Create parts 0-3; glob may return them in any order
+            for i in range(4):
+                (tmpdir_path / f"part_{i}_test.mp3").touch()
+
+            join_files(str(original_file))
+
+            # Verify from_mp3 was called in numeric part order
+            loaded_paths = [
+                call.args[0] for call in mock_audio_segment.from_mp3.call_args_list
+            ]
+            expected = [
+                str(tmpdir_path / f"part_{i}_test.mp3") for i in range(4)
+            ]
+            self.assertEqual(loaded_paths, expected)
+
+    @patch("ad_begone.utils.AudioSegment")
+    @patch("ad_begone.utils.os.remove")
     def test_join_files_no_overwrite(self, mock_remove, mock_audio_segment):
         mock_audio = Mock()
         mock_audio.__add__ = Mock(return_value=mock_audio)

@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from pathlib import Path
 from typing import List
 
@@ -236,6 +237,12 @@ def join_files(
     file_parts = []
     for fn in path.parent.glob("part_*_" + path.name):
         file_parts.append(str(fn))
+
+    def _part_index(filepath: str) -> int:
+        match = re.search(r"part_(\d+)_", Path(filepath).name)
+        return int(match.group(1)) if match else 0
+
+    file_parts.sort(key=_part_index)
     audio = AudioSegment.silent(duration=0)
     for file_part in file_parts:
         audio += AudioSegment.from_mp3(file_part)
