@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="ad-begone logo" width="256" />
+</p>
+
 # ad-begone
 
 I hate ads. I especially hate ads when I'm listening to a podcast first thing in the morning.
