@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.2.3",
     "openai>=1.63.0",
-    "pydantic-argparse>=0.10.0",
+    "pydantic2-argparse>=0.9.2",
     "pydub>=0.25.1",
     "audioop-lts>=0.2.2; python_version>='3.13'",
     "tqdm>=4.67.1",

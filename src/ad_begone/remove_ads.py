@@ -40,23 +40,23 @@ def remove_ads(
 if __name__ == "__main__":
     from typing import Optional
 
-    import pydantic.v1 as pydantic
-    import pydantic_argparse
+    from pydantic import BaseModel, Field
+    import pydantic2_argparse
 
-    class RemoveAdsArgs(pydantic.BaseModel):
-        file_name: str = pydantic.Field(
+    class RemoveAdsArgs(BaseModel):
+        file_name: str = Field(
             description="Path to the podcast episode file.",
         )
-        out_name: Optional[str] = pydantic.Field(
+        out_name: Optional[str] = Field(
             default=None,
             description="Path to save the podcast episode file without ads.",
         )
-        model: Optional[str] = pydantic.Field(
+        model: Optional[str] = Field(
             default=None,
             description="OpenAI model to use for ad classification.",
         )
 
-    parser = pydantic_argparse.ArgumentParser(
+    parser = pydantic2_argparse.ArgumentParser(
         model=RemoveAdsArgs,
         description="Remove ads from a podcast episode.",
     )
