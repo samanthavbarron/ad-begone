@@ -1,33 +1,14 @@
+import argparse
 import logging
 from pathlib import Path
 from time import sleep
 
-from typing import Optional
-
-import pydantic.v1 as pydantic
-import pydantic_argparse
 from tqdm import tqdm
 
 from .logging import setup_logging
 from .remove_ads import remove_ads
 
 logger = logging.getLogger(__name__)
-
-
-class WatchArgs(pydantic.BaseModel):
-    directory: str = pydantic.Field(
-        default=".",
-        description="Path to the podcast directory.",
-    )
-    sleep: int = pydantic.Field(
-        default=600,
-        gt=0,
-        description="Sleep time in seconds between processing runs.",
-    )
-    model: Optional[str] = pydantic.Field(
-        default=None,
-        description="OpenAI model to use for ad classification.",
-    )
 
 
 def walk_directory(
@@ -53,11 +34,19 @@ def walk_directory(
 def main():
     setup_logging()
 
-    parser = pydantic_argparse.ArgumentParser(
-        model=WatchArgs,
+    parser = argparse.ArgumentParser(
         description="Remove ads from a podcast episode.",
     )
-    args = parser.parse_typed_args()
+    parser.add_argument(
+        "--directory", default=".", help="Path to the podcast directory.",
+    )
+    parser.add_argument(
+        "--sleep", type=int, default=600, help="Sleep time in seconds between processing runs.",
+    )
+    parser.add_argument(
+        "--model", default=None, help="OpenAI model to use for ad classification.",
+    )
+    args = parser.parse_args()
 
     while True:
         try:
