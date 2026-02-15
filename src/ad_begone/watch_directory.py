@@ -21,7 +21,6 @@ class WatchArgs(pydantic.BaseModel):
     )
     sleep: int = pydantic.Field(
         default=600,
-        gt=0,
         description="Sleep time in seconds between processing runs.",
     )
     model: Optional[str] = pydantic.Field(
