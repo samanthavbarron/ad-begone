@@ -11,7 +11,6 @@ dependencies = [
     { name = "openai" },
     { name = "pydantic-argparse" },
     { name = "pydub" },
-    { name = "tqdm" },
 ]
 
 [package.metadata]
@@ -20,7 +19,6 @@ requires-dist = [
     { name = "openai", specifier = ">=1.63.0" },
     { name = "pydantic-argparse", specifier = ">=0.10.0" },
     { name = "pydub", specifier = ">=0.25.1" },
-    { name = "tqdm", specifier = ">=4.67.1" },
 ]
 
 [[package]]

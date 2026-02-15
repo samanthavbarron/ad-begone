@@ -6,7 +6,6 @@ from typing import Optional
 
 import pydantic.v1 as pydantic
 import pydantic_argparse
-from tqdm import tqdm
 
 from .logging import setup_logging
 from .remove_ads import remove_ads
@@ -43,7 +42,9 @@ def walk_directory(
             continue
         queue.append(fn)
 
-    for fn in tqdm(queue, desc="Podcasts to process"):
+    logger.info("Found %d podcast(s) to process", len(queue))
+    for i, fn in enumerate(queue, 1):
+        logger.info("Processing podcast %d/%d: %s", i, len(queue), fn)
         remove_ads(
             file_name=str(fn),
             overwrite=overwrite,
