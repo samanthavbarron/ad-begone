@@ -175,6 +175,16 @@ def find_ad_time_windows(
     return windows
 
 
+def _get_ad_text_excerpt(transcription: TranscriptionVerbose, window: Window) -> str:
+    words = []
+    for seg in transcription.segments:
+        if seg.start >= window.start and seg.end <= window.end:
+            words.extend(seg.text.strip().split())
+    if len(words) <= 40:
+        return " ".join(words)
+    return " ".join(words[:20]) + " ... " + " ".join(words[-20:])
+
+
 def _remove_ads(
     file_name: str,
     file_name_transcription_cache: str,
@@ -186,6 +196,16 @@ def _remove_ads(
     completion = cached_annotate_transcription(transcription, file_name=file_name_transcription_cache, model=model)
     annotations = get_ordered_annotations(completion)
     windows = find_ad_time_windows(transcription, annotations)
+
+    total_ad_seconds = 0.0
+    for window in windows:
+        if window.segment_type == "ad":
+            total_ad_seconds += window.duration()
+            excerpt = _get_ad_text_excerpt(transcription, window)
+            logger.info("Detected ad [%.1fs-%.1fs]: %s", window.start, window.end, excerpt)
+
+    minutes, seconds = divmod(total_ad_seconds, 60)
+    logger.info("Total ad time removed from %s: %dm %ds", file_name, int(minutes), int(seconds))
 
     audio = AudioSegment.from_mp3(file_name)
     notif = AudioSegment.from_mp3(notif_name)

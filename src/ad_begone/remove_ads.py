@@ -1,6 +1,6 @@
 import logging
+import time
 from pathlib import Path
-from tqdm import tqdm
 
 from .ad_trimmer import AdTrimmer
 from .utils import join_files, split_file
@@ -27,14 +27,19 @@ def remove_ads(
         return
 
     logger.info("Removing ads from %s", file_name)
+    start_time = time.monotonic()
 
     split_names = split_file(file_name)
-    for split_name in tqdm(split_names, desc="Splitting parts"):
+    for i, split_name in enumerate(split_names, 1):
+        logger.info("Processing part %d/%d for %s", i, len(split_names), file_name)
         trimmer = AdTrimmer(split_name, model=model)
         trimmer.remove_ads(notif_name=notif_name)
     logger.info("Joining parts for %s", file_name)
     join_files(file_name)
-    logger.info("Done processing %s", file_name)
+
+    elapsed = time.monotonic() - start_time
+    minutes, seconds = divmod(elapsed, 60)
+    logger.info("Done processing %s (elapsed: %dm %ds)", file_name, int(minutes), int(seconds))
     path_file_hit.write_text("")
 
 if __name__ == "__main__":
